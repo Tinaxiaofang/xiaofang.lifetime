@@ -1,72 +1,23 @@
+import {
+
+  db,
+
+  auth,
+
+  provider,
+
+  storage
+
+}
+
+from "./firebase.js";
 /* =========================
    小方树洞 · 主系统
 ========================= */
 
 /* Firebase */
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  getAuth,
-  signInWithRedirect,
-  GoogleAuthProvider
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-/* Firebase 配置 */
-
-const firebaseConfig = {
-
-  apiKey:
-  "AIzaSyBp3yXkRP1BaAxXqscVb7NuFWmUtMn4xPI",
-
-  authDomain:
-  "xiaofanglife.firebaseapp.com",
-
-  projectId:
-  "xiaofanglife",
-
-  storageBucket:
-  "xiaofanglife.appspot.com",
-
-  messagingSenderId:
-  "34189068819",
-
-  appId:
-  "1:34189068819:web:2f17d673b2fdd750200de6"
-};
-
-const app =
-initializeApp(firebaseConfig);
-
-const db =
-getFirestore(app);
-
-const auth =
-getAuth(app);
-
-const storage =
-getStorage(app);
-
-const provider =
-new GoogleAuthProvider();
 
 /* =========================
    登录系统
