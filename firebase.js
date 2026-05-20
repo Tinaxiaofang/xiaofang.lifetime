@@ -62,7 +62,7 @@ const db =
 
 getFirestore(app);
 
-/* 登录系统 */
+/* 登录 */
 
 const auth =
 
