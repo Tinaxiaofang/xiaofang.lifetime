@@ -2,33 +2,41 @@
 <html lang="zh-CN">
 
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
   <title>小方树洞</title>
 
   <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
+
+<!-- 登录框 -->
 
 <div class="login-box">
 
   <h2>小方树洞</h2>
 
-<p style="margin-bottom:20px;color:#666;">
-  青春会过去，但记忆不会。
-</p>
-  <input
-  type="text"
-  id="usernameInput"
-  placeholder="账号"
-/>
+  <p style="margin-bottom:20px;color:#666;">
+    青春会过去，但记忆不会。
+  </p>
 
-<input
-  type="password"
-  id="passwordInput"
-  placeholder="密码"
-/>
+  <input
+    type="text"
+    id="usernameInput"
+    placeholder="账号"
+  >
+
+  <input
+    type="password"
+    id="passwordInput"
+    placeholder="密码"
+  >
 
   <button id="passwordBtn">
     登录
@@ -44,7 +52,10 @@
 
 </div>
 
-<div id="siteContent" style="display:none;">
+<!-- 网站内容 -->
+
+<div id="siteContent"
+     style="display:none;">
 
   <div class="film-grain"></div>
 
@@ -74,7 +85,8 @@
 
       <p>
         今天，小方树洞正式诞生了。<br>
-        从这一刻开始，旅行、朋友、爱与成长，都将被认真记录。
+        从这一刻开始，旅行、朋友、爱与成长，
+        都将被认真记录。
       </p>
 
       <div class="meta">
@@ -88,12 +100,19 @@
   <section class="menu-grid">
 
     <div class="card">📝 日记</div>
+
     <div class="card">✨ 感想</div>
+
     <div class="card">📷 照片</div>
+
     <div class="card">👥 朋友</div>
+
     <div class="card">❤️ 恋人</div>
+
     <div class="card">🌍 旅行</div>
+
     <div class="card">📌 重要事件</div>
+
     <div class="card">🗺 人生地图</div>
 
   </section>
@@ -103,18 +122,33 @@
     <h2>📅 成长时间轴</h2>
 
     <div class="timeline-item">
+
       <span class="year">18岁</span>
-      <p>第一次离开熟悉的地方。</p>
+
+      <p>
+        第一次离开熟悉的地方。
+      </p>
+
     </div>
 
     <div class="timeline-item">
+
       <span class="year">19岁</span>
-      <p>来到沙特，开始新的生活。</p>
+
+      <p>
+        来到沙特，开始新的生活。
+      </p>
+
     </div>
 
     <div class="timeline-item">
+
       <span class="year">20岁</span>
-      <p>小方树洞诞生。</p>
+
+      <p>
+        小方树洞诞生。
+      </p>
+
     </div>
 
   </section>
@@ -125,10 +159,21 @@
 
     <div class="photo-grid">
 
-      <div class="photo">旅行照片</div>
-      <div class="photo">朋友瞬间</div>
-      <div class="photo">城市夜晚</div>
-      <div class="photo">青春记忆</div>
+      <div class="photo">
+        旅行照片
+      </div>
+
+      <div class="photo">
+        朋友瞬间
+      </div>
+
+      <div class="photo">
+        城市夜晚
+      </div>
+
+      <div class="photo">
+        青春记忆
+      </div>
 
     </div>
 
@@ -136,7 +181,9 @@
 
   <footer>
 
-    <p>© 小方树洞 · Xiaofang Memory Archive</p>
+    <p>
+      © 小方树洞 · Xiaofang Memory Archive
+    </p>
 
     <p class="footer-small">
       青春会过去，但记忆不会。
@@ -145,6 +192,8 @@
   </footer>
 
 </div>
+
+<!-- Firebase -->
 
 <script type="module">
 
@@ -160,30 +209,42 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyBp3yXkRP1BaAxXqscVb7NuFWmUtMn4xPI",
+  apiKey:
+  "AIzaSyBp3yXkRP1BaAxXqscVb7NuFWmUtMn4xPI",
 
-  authDomain: "xiaofanglife.firebaseapp.com",
+  authDomain:
+  "xiaofanglife.firebaseapp.com",
 
-  projectId: "xiaofanglife",
+  projectId:
+  "xiaofanglife",
 
-  storageBucket: "xiaofanglife.appspot.com",
+  storageBucket:
+  "xiaofanglife.appspot.com",
 
-  messagingSenderId: "34189068819",
+  messagingSenderId:
+  "34189068819",
 
-  appId: "1:34189068819:web:2f17d673b2fdd750200de6"
+  appId:
+  "1:34189068819:web:2f17d673b2fdd750200de6"
 };
 
-const app = initializeApp(firebaseConfig);
+const app =
+initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+const auth =
+getAuth(app);
 
-const provider = new GoogleAuthProvider();
+const provider =
+new GoogleAuthProvider();
 
 const loginBtn =
 document.getElementById("loginBtn");
 
 const passwordBtn =
 document.getElementById("passwordBtn");
+
+const usernameInput =
+document.getElementById("usernameInput");
 
 const passwordInput =
 document.getElementById("passwordInput");
@@ -196,11 +257,21 @@ document.getElementById("siteContent");
 
 siteContent.style.display = "none";
 
+/* 账号密码登录 */
+
 passwordBtn.addEventListener("click", () => {
 
-  const password = passwordInput.value;
+  const username =
+  usernameInput.value;
 
-  if (password === "xiaofang520") {
+  const password =
+  passwordInput.value;
+
+  if (
+    username === "xiaofang"
+    &&
+    password === "5201314"
+  ) {
 
     siteContent.style.display = "block";
 
@@ -211,17 +282,22 @@ passwordBtn.addEventListener("click", () => {
 
   else {
 
-    alert("密码错误");
+    alert("账号或密码错误");
 
   }
 
 });
 
+/* Google 登录 */
+
 loginBtn.addEventListener("click", async () => {
 
   try {
 
-    await signInWithRedirect(auth, provider);
+    await signInWithRedirect(
+      auth,
+      provider
+    );
 
   }
 
@@ -229,13 +305,15 @@ loginBtn.addEventListener("click", async () => {
 
     console.error(error);
 
-    alert("登录失败");
+    alert("Google 登录失败");
 
   }
 
 });
 
-console.log("小方树洞 Firebase 已连接");
+console.log(
+  "小方树洞 Firebase 已连接"
+);
 
 </script>
 
