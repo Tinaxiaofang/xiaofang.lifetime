@@ -76,7 +76,34 @@
     </div>
 
   </header>
+<section class="diary-box">
 
+  <h2>📝 今日心情</h2>
+
+  <input
+    type="text"
+    id="diaryTitle"
+    placeholder="标题"
+  >
+
+  <textarea
+    id="diaryContent"
+    placeholder="写下今天的故事..."
+  ></textarea>
+
+  <input
+    type="text"
+    id="diaryLocation"
+    placeholder="所在地点"
+  >
+
+  <button id="saveDiaryBtn">
+    保存日记
+  </button>
+
+</section>
+
+<div id="diaryList"></div>
   <section class="today-card">
 
     <h2>📖 今日记录</h2>
@@ -199,7 +226,13 @@
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth,
   signInWithRedirect,
@@ -231,6 +264,8 @@ const firebaseConfig = {
 const app =
 initializeApp(firebaseConfig);
 
+const db =
+getFirestore(app);
 const auth =
 getAuth(app);
 
@@ -310,7 +345,84 @@ loginBtn.addEventListener("click", async () => {
   }
 
 });
+const saveDiaryBtn =
+document.getElementById("saveDiaryBtn");
 
+const diaryTitle =
+document.getElementById("diaryTitle");
+
+const diaryContent =
+document.getElementById("diaryContent");
+
+const diaryLocation =
+document.getElementById("diaryLocation");
+
+const diaryList =
+document.getElementById("diaryList");
+
+saveDiaryBtn.addEventListener("click", async () => {
+
+  await addDoc(collection(db, "diaries"), {
+
+    title: diaryTitle.value,
+
+    content: diaryContent.value,
+
+    location: diaryLocation.value,
+
+    time: new Date().toLocaleString()
+
+  });
+
+  alert("日记已保存");
+
+  loadDiaries();
+
+});
+
+async function loadDiaries() {
+
+  diaryList.innerHTML = "";
+
+  const querySnapshot =
+  await getDocs(collection(db, "diaries"));
+
+  querySnapshot.forEach((doc) => {
+
+    const data = doc.data();
+
+    const div =
+    document.createElement("div");
+
+    div.className = "diary-item";
+
+    div.innerHTML = `
+
+      <h3>${data.title}</h3>
+
+      <p>${data.content}</p>
+
+      <small>
+        📍 ${data.location}
+      </small>
+
+      <br>
+
+      <small>
+        ⏰ ${data.time}
+      </small>
+
+      <hr>
+
+    `;
+
+    diaryList.appendChild(div);
+
+  });
+
+}
+
+loadDiaries();
 console.log(
   "小方树洞 Firebase 已连接"
 );
