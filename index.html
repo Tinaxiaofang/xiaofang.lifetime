@@ -11,7 +11,10 @@
   <title>小方树洞</title>
 
   <link rel="stylesheet" href="style.css">
-
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
 </head>
 
 <body>
@@ -179,7 +182,13 @@
     </div>
 
   </section>
+<section class="map-section">
 
+  <h2>🗺 人生地图</h2>
+
+  <div id="map"></div>
+
+</section>
   <section class="gallery">
 
     <h2>📷 胶片记忆墙</h2>
@@ -423,12 +432,51 @@ async function loadDiaries() {
 }
 
 loadDiaries();
+const map = L.map('map').setView([21.4858, 39.1925], 3);
+
+L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution: '© OpenStreetMap'
+  }
+).addTo(map);
+
+/* 默认人生地点 */
+
+const places = [
+
+  {
+    name: "吉达",
+    coords: [21.4858, 39.1925]
+  },
+
+  {
+    name: "麦地那",
+    coords: [24.5247, 39.5692]
+  },
+
+  {
+    name: "广州",
+    coords: [23.1291, 113.2644]
+  }
+
+];
+
+places.forEach(place => {
+
+  L.marker(place.coords)
+   .addTo(map)
+   .bindPopup(
+     `📍 ${place.name}`
+   );
+
+});
 console.log(
   "小方树洞 Firebase 已连接"
 );
 
 </script>
-
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 
 </html>
