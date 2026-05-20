@@ -9,13 +9,22 @@
         content="width=device-width, initial-scale=1.0">
 
   <title>小方树洞</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#d6c7b0">
-<link rel="apple-touch-icon"
-href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
+
+  <!-- 主样式 -->
+
   <link rel="stylesheet" href="style.css">
 
-  <!-- 地图库 -->
+  <!-- App 化 -->
+
+  <link rel="manifest" href="manifest.json">
+
+  <meta name="theme-color"
+        content="#d6c7b0">
+
+  <link rel="apple-touch-icon"
+        href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
+
+  <!-- 地图 -->
 
   <link
     rel="stylesheet"
@@ -26,7 +35,7 @@ href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
 
 <body>
 
-<!-- 登录界面 -->
+<!-- 登录 -->
 
 <div class="login-box">
 
@@ -58,8 +67,6 @@ href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
     Google 登录
   </button>
 
-  <p id="userInfo"></p>
-
 </div>
 
 <!-- 网站主体 -->
@@ -89,7 +96,21 @@ href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
 
   </header>
 
-  <!-- 日记系统 -->
+  <!-- 那年今天 -->
+
+  <section class="memory-box">
+
+    <h2>⏳ 那年今天</h2>
+
+    <div id="memoryContent">
+
+      正在寻找过去的你...
+
+    </div>
+
+  </section>
+
+  <!-- 日记 -->
 
   <section class="diary-box">
 
@@ -130,7 +151,8 @@ href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
 
       <p>
         今天，小方树洞正式诞生了。<br>
-        从这一刻开始，旅行、朋友、爱与成长，
+        从这一刻开始，
+        旅行、朋友、爱与成长，
         都将被认真记录。
       </p>
 
@@ -142,7 +164,7 @@ href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
 
   </section>
 
-  <!-- 功能板块 -->
+  <!-- 功能 -->
 
   <section class="menu-grid">
 
@@ -164,7 +186,7 @@ href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
 
   </section>
 
-  <!-- 成长时间轴 -->
+  <!-- 时间轴 -->
 
   <section class="timeline">
 
@@ -202,7 +224,7 @@ href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
 
   </section>
 
-  <!-- 人生地图 -->
+  <!-- 地图 -->
 
   <section class="map-section">
 
@@ -282,7 +304,7 @@ href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
 
 </div>
 
-<!-- 地图 -->
+<!-- 地图 JS -->
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -309,16 +331,14 @@ import {
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
-
   getStorage,
   ref,
   uploadBytes,
   getDownloadURL
-
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-/* Firebase 配置 */
+/* Firebase */
 
 const firebaseConfig = {
 
@@ -499,6 +519,8 @@ saveDiaryBtn.addEventListener("click", async () => {
 
   loadDiaries();
 
+  loadMemory();
+
 });
 
 /* 加载日记 */
@@ -541,8 +563,6 @@ async function loadDiaries() {
 
     diaryList.appendChild(div);
 
-    /* 地图标记 */
-
     if (
       cityMap[data.location]
     ) {
@@ -573,7 +593,93 @@ async function loadDiaries() {
 
 loadDiaries();
 
-/* 照片上传系统 */
+/* 那年今天 */
+
+async function loadMemory() {
+
+  const memoryContent =
+  document.getElementById("memoryContent");
+
+  memoryContent.innerHTML = "";
+
+  const querySnapshot =
+  await getDocs(collection(db, "diaries"));
+
+  const today =
+  new Date();
+
+  const todayMonth =
+  today.getMonth();
+
+  const todayDate =
+  today.getDate();
+
+  let found = false;
+
+  querySnapshot.forEach((doc) => {
+
+    const data = doc.data();
+
+    const diaryTime =
+    new Date(data.time);
+
+    if (
+
+      diaryTime.getMonth()
+      === todayMonth
+
+      &&
+
+      diaryTime.getDate()
+      === todayDate
+
+    ) {
+
+      found = true;
+
+      memoryContent.innerHTML += `
+
+        <div class="memory-item">
+
+          <h3>${data.title}</h3>
+
+          <p>${data.content}</p>
+
+          <small>
+            📍 ${data.location}
+          </small>
+
+          <br>
+
+          <small>
+            ⏰ ${data.time}
+          </small>
+
+        </div>
+
+      `;
+
+    }
+
+  });
+
+  if (!found) {
+
+    memoryContent.innerHTML = `
+
+      <p>
+        今天还没有过去的回忆。
+      </p>
+
+    `;
+
+  }
+
+}
+
+loadMemory();
+
+/* 上传照片 */
 
 const uploadBtn =
 document.getElementById("uploadBtn");
@@ -614,8 +720,6 @@ uploadBtn.addEventListener("click", async () => {
   const url =
   await getDownloadURL(storageRef);
 
-  /* 页面显示 */
-
   const img =
   document.createElement("img");
 
@@ -630,8 +734,6 @@ uploadBtn.addEventListener("click", async () => {
   img.style.marginTop = "20px";
 
   photoList.appendChild(img);
-
-  /* 地图显示 */
 
   if (
     cityMap[photoLocation.value]
@@ -665,12 +767,7 @@ uploadBtn.addEventListener("click", async () => {
 
 });
 
-console.log(
-  "小方树洞 Firebase 已连接"
-);
-
-</script>
-<script>
+/* App 化 */
 
 if ('serviceWorker' in navigator) {
 
@@ -680,7 +777,12 @@ if ('serviceWorker' in navigator) {
 
 }
 
+console.log(
+  "小方树洞 Firebase 已连接"
+);
+
 </script>
+
 </body>
 
 </html>
