@@ -12,6 +12,8 @@
 
   <link rel="stylesheet" href="style.css">
 
+  <!-- 地图库 -->
+
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"
@@ -21,13 +23,13 @@
 
 <body>
 
-<!-- 登录框 -->
+<!-- 登录界面 -->
 
 <div class="login-box">
 
   <h2>小方树洞</h2>
 
-  <p style="margin-bottom:20px;color:#666;">
+  <p class="login-subtitle">
     青春会过去，但记忆不会。
   </p>
 
@@ -57,12 +59,14 @@
 
 </div>
 
-<!-- 网站内容 -->
+<!-- 网站主体 -->
 
 <div id="siteContent"
      style="display:none;">
 
   <div class="film-grain"></div>
+
+  <!-- 首页 -->
 
   <header class="hero">
 
@@ -135,7 +139,7 @@
 
   </section>
 
-  <!-- 功能卡片 -->
+  <!-- 功能板块 -->
 
   <section class="menu-grid">
 
@@ -157,7 +161,7 @@
 
   </section>
 
-  <!-- 时间轴 -->
+  <!-- 成长时间轴 -->
 
   <section class="timeline">
 
@@ -205,7 +209,33 @@
 
   </section>
 
-  <!-- 胶片记忆墙 -->
+  <!-- 上传照片 -->
+
+  <section class="upload-box">
+
+    <h2>📷 上传人生照片</h2>
+
+    <input
+      type="file"
+      id="photoInput"
+      accept="image/*"
+    >
+
+    <input
+      type="text"
+      id="photoLocation"
+      placeholder="照片地点（例如：吉达）"
+    >
+
+    <button id="uploadBtn">
+      上传照片
+    </button>
+
+  </section>
+
+  <div id="photoList"></div>
+
+  <!-- 胶片墙 -->
 
   <section class="gallery">
 
@@ -233,6 +263,8 @@
 
   </section>
 
+  <!-- 页脚 -->
+
   <footer>
 
     <p>
@@ -247,7 +279,7 @@
 
 </div>
 
-<!-- Leaflet 地图 -->
+<!-- 地图 -->
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -272,6 +304,18 @@ import {
   GoogleAuthProvider
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+/* Firebase 配置 */
 
 const firebaseConfig = {
 
@@ -303,8 +347,13 @@ getFirestore(app);
 const auth =
 getAuth(app);
 
+const storage =
+getStorage(app);
+
 const provider =
 new GoogleAuthProvider();
+
+/* 登录 */
 
 const loginBtn =
 document.getElementById("loginBtn");
@@ -318,15 +367,10 @@ document.getElementById("usernameInput");
 const passwordInput =
 document.getElementById("passwordInput");
 
-const userInfo =
-document.getElementById("userInfo");
-
 const siteContent =
 document.getElementById("siteContent");
 
 siteContent.style.display = "none";
-
-/* 登录 */
 
 passwordBtn.addEventListener("click", () => {
 
@@ -409,9 +453,11 @@ const cityMap = {
 
   "拉各斯": [6.5244, 3.3792],
 
-  "麦加": [21.3891, 39.8579],
+  "北京": [39.9042, 116.4074],
 
-  "北京": [39.9042, 116.4074]
+  "上海": [31.2304, 121.4737],
+
+  "麦加": [21.3891, 39.8579]
 
 };
 
@@ -492,7 +538,7 @@ async function loadDiaries() {
 
     diaryList.appendChild(div);
 
-    /* 自动地图标记 */
+    /* 地图标记 */
 
     if (
       cityMap[data.location]
@@ -523,6 +569,98 @@ async function loadDiaries() {
 }
 
 loadDiaries();
+
+/* 照片上传系统 */
+
+const uploadBtn =
+document.getElementById("uploadBtn");
+
+const photoInput =
+document.getElementById("photoInput");
+
+const photoLocation =
+document.getElementById("photoLocation");
+
+const photoList =
+document.getElementById("photoList");
+
+uploadBtn.addEventListener("click", async () => {
+
+  const file =
+  photoInput.files[0];
+
+  if (!file) {
+
+    alert("请选择照片");
+
+    return;
+
+  }
+
+  const storageRef =
+  ref(
+    storage,
+    "photos/" + file.name
+  );
+
+  await uploadBytes(
+    storageRef,
+    file
+  );
+
+  const url =
+  await getDownloadURL(storageRef);
+
+  /* 页面显示 */
+
+  const img =
+  document.createElement("img");
+
+  img.src = url;
+
+  img.style.width = "100%";
+
+  img.style.maxWidth = "500px";
+
+  img.style.borderRadius = "20px";
+
+  img.style.marginTop = "20px";
+
+  photoList.appendChild(img);
+
+  /* 地图显示 */
+
+  if (
+    cityMap[photoLocation.value]
+  ) {
+
+    L.marker(
+      cityMap[photoLocation.value]
+    )
+
+    .addTo(map)
+
+    .bindPopup(`
+
+      <h3>📷 人生照片</h3>
+
+      <img
+        src="${url}"
+        width="200"
+        style="border-radius:12px;"
+      >
+
+      <p>
+        📍 ${photoLocation.value}
+      </p>
+
+    `);
+
+  }
+
+  alert("照片上传成功");
+
+});
 
 console.log(
   "小方树洞 Firebase 已连接"
