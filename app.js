@@ -1,12 +1,4 @@
-/* =========================
-   Firebase
-========================= */
-
-import {
-  db,
-  auth,
-  provider
-} from "./firebase.js";
+import { db, auth, provider } from "./firebase.js";
 
 import {
   collection,
@@ -15,301 +7,268 @@ import {
   query,
   orderBy,
   deleteDoc,
+  doc,
   updateDoc,
-  doc
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
-  signInWithRedirect
+  signInWithPopup,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const storage = getStorage();
+
 /* =========================
-   登录
+   当前用户
 ========================= */
 
-const loginBtn = document.getElementById("loginBtn");
-const passwordBtn = document.getElementById("passwordBtn");
-const usernameInput = document.getElementById("usernameInput");
-const passwordInput = document.getElementById("passwordInput");
-const siteContent = document.getElementById("siteContent");
+let currentUser = null;
 
-siteContent.style.display = "none";
+signInWithPopup(auth, provider);
 
-passwordBtn.addEventListener("click", () => {
-  if (
-    usernameInput.value === "xiaofang" &&
-    passwordInput.value === "5201314"
-  ) {
-    siteContent.style.display = "block";
-    document.querySelector(".login-box").style.display = "none";
-  } else {
-    alert("账号或密码错误");
-  }
-});
-
-loginBtn.addEventListener("click", async () => {
-  try {
-    await signInWithRedirect(auth, provider);
-  } catch (e) {
-    console.error(e);
-    alert("Google 登录失败");
-  }
+onAuthStateChanged(auth, (user) => {
+  if (user) currentUser = user;
 });
 
 /* =========================
-   地图
+   发布动态（文字+多图）
 ========================= */
 
-const map = L.map("map").setView([21.4858, 39.1925], 3);
+window.publish = async function () {
 
-L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  { attribution: "© OpenStreetMap" }
-).addTo(map);
+  const text = document.getElementById("textInput").value;
+  const files = document.getElementById("imageInput").files;
 
-const cityMap = {
-  "吉达": [21.4858,39.1925],
-  "麦地那": [24.5247,39.5692],
-  "广州": [23.1291,113.2644],
-  "北京": [39.9042,116.4074],
-  "上海": [31.2304,121.4737],
-  "迪拜": [25.2048,55.2708],
-  "拉各斯": [6.5244,3.3792],
-  "麦加": [21.3891,39.8579]
+  let images = [];
+
+  for (let file of files) {
+    const r = ref(storage, `posts/${Date.now()}_${file.name}`);
+    await uploadBytes(r, file);
+    images.push(await getDownloadURL(r));
+  }
+
+  await addDoc(collection(db, "posts"), {
+    uid: currentUser.uid,
+    username: currentUser.displayName,
+    avatar: currentUser.photoURL,
+    text,
+    images,
+    time: Date.now(),
+    likes: []
+  });
+
+  loadPosts();
 };
 
 /* =========================
-   日记
+   点赞（可取消）
 ========================= */
 
-const saveDiaryBtn = document.getElementById("saveDiaryBtn");
-const diaryTitle = document.getElementById("diaryTitle");
-const diaryContent = document.getElementById("diaryContent");
-const diaryLocation = document.getElementById("diaryLocation");
-const diaryList = document.getElementById("diaryList");
+window.likePost = async function (postId) {
 
-/* 保存 */
-saveDiaryBtn.addEventListener("click", async () => {
-  if (!diaryTitle.value || !diaryContent.value) {
-    alert("请填写完整");
-    return;
+  const refDoc = doc(db, "posts", postId);
+  const snap = await getDoc(refDoc);
+  const data = snap.data();
+
+  let likes = data.likes || [];
+  const uid = currentUser.uid;
+
+  if (likes.includes(uid)) {
+    likes = likes.filter(i => i !== uid);
+  } else {
+    likes.push(uid);
   }
 
-  await addDoc(collection(db, "diaries"), {
-    title: diaryTitle.value,
-    content: diaryContent.value,
-    location: diaryLocation.value,
-    time: Date.now()
-  });
+  await updateDoc(refDoc, { likes });
 
-  diaryTitle.value = "";
-  diaryContent.value = "";
-  diaryLocation.value = "";
+  loadPosts();
+};
 
-  loadDiaries();
-  loadMemory();
-});
+/* =========================
+   关注系统
+========================= */
 
-/* 加载 + 排序 */
-async function loadDiaries() {
-  diaryList.innerHTML = "";
+window.toggleFollow = async function (targetUid) {
 
-  const q = query(collection(db, "diaries"), orderBy("time", "desc"));
+  const meRef = doc(db, "users", currentUser.uid);
+  const targetRef = doc(db, "users", targetUid);
+
+  const meSnap = await getDoc(meRef);
+  const targetSnap = await getDoc(targetRef);
+
+  let following = meSnap.data()?.following || [];
+  let followers = targetSnap.data()?.followers || [];
+
+  if (following.includes(targetUid)) {
+    following = following.filter(i => i !== targetUid);
+    followers = followers.filter(i => i !== currentUser.uid);
+  } else {
+    following.push(targetUid);
+    followers.push(currentUser.uid);
+  }
+
+  await updateDoc(meRef, { following });
+  await updateDoc(targetRef, { followers });
+
+  loadPosts();
+};
+
+/* =========================
+   加载动态（推荐流 / 关注流）
+========================= */
+
+window.loadPosts = async function (mode = "all") {
+
+  const box = document.getElementById("postList");
+  box.innerHTML = "";
+
+  const q = query(collection(db, "posts"), orderBy("time", "desc"));
   const snapshot = await getDocs(q);
 
-  snapshot.forEach((docItem) => {
-    const d = docItem.data();
-
-    const div = document.createElement("div");
-    div.className = "diary-item";
-
-    div.innerHTML = `
-      <h3>${d.title}</h3>
-      <p>${d.content}</p>
-
-      <small>📍 ${d.location}</small><br>
-      <small>⏰ ${new Date(d.time).toLocaleString()}</small>
-
-      <div style="margin-top:10px; display:flex; gap:10px;">
-        <button style="background:#f44336;color:#fff;border:none;padding:5px 10px;border-radius:6px;"
-          onclick="deleteDiary('${docItem.id}')">
-          删除
-        </button>
-
-        <button style="background:#2196f3;color:#fff;border:none;padding:5px 10px;border-radius:6px;"
-          onclick="editDiary('${docItem.id}', \`${d.title}\`, \`${d.content}\`)">
-          编辑
-        </button>
-      </div>
-    `;
-
-    diaryList.appendChild(div);
-
-    if (cityMap[d.location]) {
-      L.marker(cityMap[d.location])
-        .addTo(map)
-        .bindPopup(`<h3>${d.title}</h3><p>${d.content}</p>`);
-    }
-  });
-}
-
-loadDiaries();
-
-/* 删除 */
-window.deleteDiary = async function(id) {
-  if (!confirm("确定删除？")) return;
-  await deleteDoc(doc(db, "diaries", id));
-  loadDiaries();
-};
-
-/* 编辑 */
-window.editDiary = async function(id, title, content) {
-  const t = prompt("修改标题", title);
-  const c = prompt("修改内容", content);
-
-  if (!t || !c) return;
-
-  await updateDoc(doc(db, "diaries", id), {
-    title: t,
-    content: c
-  });
-
-  loadDiaries();
-};
-
-/* =========================
-   回忆
-========================= */
-
-async function loadMemory() {
-  const el = document.getElementById("memoryContent");
-  el.innerHTML = "";
-
-  const snapshot = await getDocs(collection(db, "diaries"));
-
-  const today = new Date();
-  let found = false;
+  const meSnap = await getDoc(doc(db, "users", currentUser.uid));
+  const following = meSnap.data()?.following || [];
 
   snapshot.forEach((d) => {
-    const data = d.data();
-    const date = new Date(data.time);
 
-    if (
-      date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate()
-    ) {
-      found = true;
-      el.innerHTML += `
-        <div class="diary-item">
-          <h3>${data.title}</h3>
-          <p>${data.content}</p>
-        </div>
-      `;
-    }
-  });
+    const p = d.data();
 
-  if (!found) el.innerHTML = "今天还没有过去的回忆。";
-}
+    if (mode === "follow" && !following.includes(p.uid)) return;
 
-loadMemory();
-
-/* =========================
-   Cloudinary 照片
-========================= */
-
-const uploadBtn = document.getElementById("uploadBtn");
-const photoInput = document.getElementById("photoInput");
-const photoLocation = document.getElementById("photoLocation");
-const photoList = document.getElementById("photoList");
-
-/* 上传 */
-uploadBtn.addEventListener("click", async () => {
-  const file = photoInput.files[0];
-  if (!file) return alert("请选择照片");
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", "xiaofang");
-
-  const res = await fetch(
-    "https://api.cloudinary.com/v1_1/dzlxnbtoo/image/upload",
-    { method: "POST", body: formData }
-  );
-
-  const data = await res.json();
-
-  if (!data.secure_url) {
-    console.error(data);
-    return alert("上传失败");
-  }
-
-  await addDoc(collection(db, "photos"), {
-    imageUrl: data.secure_url,
-    location: photoLocation.value,
-    time: Date.now()
-  });
-
-  loadPhotos();
-});
-
-/* 加载照片 */
-async function loadPhotos() {
-  photoList.innerHTML = "";
-
-  const q = query(collection(db, "photos"), orderBy("time", "desc"));
-  const snapshot = await getDocs(q);
-
-  snapshot.forEach((docItem) => {
-    const d = docItem.data();
+    let imgs = "";
+    p.images?.forEach(url => {
+      imgs += `<img src="${url}" style="width:100%;border-radius:10px;margin-top:5px;">`;
+    });
 
     const div = document.createElement("div");
-    div.className = "photo-card";
 
     div.innerHTML = `
-      <img src="${d.imageUrl}" class="memory-photo">
+      <div style="border:1px solid #ddd;margin:10px;padding:10px;border-radius:10px;">
 
-      <div class="photo-info">
-        <p>📍 ${d.location}</p>
-        <small>⏰ ${new Date(d.time).toLocaleString()}</small>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <img src="${p.avatar}" width="40" style="border-radius:50%;cursor:pointer"
+            onclick="openProfile('${p.uid}')">
+          <b>${p.username}</b>
 
-        <div style="margin-top:10px;">
-          <button style="background:#f44336;color:#fff;border:none;padding:5px 10px;border-radius:6px;"
-            onclick="deletePhoto('${docItem.id}')">
-            删除
-          </button>
+          <button onclick="toggleFollow('${p.uid}')">关注</button>
         </div>
+
+        <p>${p.text}</p>
+
+        ${imgs}
+
+        <small>${new Date(p.time).toLocaleString()}</small>
+
+        <div>
+          ❤️ ${(p.likes || []).length}
+          <button onclick="likePost('${d.id}')">点赞</button>
+          <button onclick="deletePost('${d.id}')">删除</button>
+          <button onclick="openComment('${d.id}')">评论</button>
+        </div>
+
+        <div id="c-${d.id}"></div>
+
       </div>
     `;
 
-    photoList.appendChild(div);
+    box.appendChild(div);
 
-    if (cityMap[d.location]) {
-      L.marker(cityMap[d.location])
-        .addTo(map)
-        .bindPopup(`<img src="${d.imageUrl}" width="180"><p>${d.location}</p>`);
-    }
+    loadComments(d.id);
   });
-}
-
-loadPhotos();
-
-/* 删除照片 */
-window.deletePhoto = async function(id) {
-  if (!confirm("确定删除？")) return;
-  await deleteDoc(doc(db, "photos", id));
-  loadPhotos();
 };
 
 /* =========================
-   工具
+   删除
 ========================= */
 
-window.scrollToSection = function(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+window.deletePost = async function (id) {
+  if (!confirm("删除？")) return;
+  await deleteDoc(doc(db, "posts", id));
+  loadPosts();
 };
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./service-worker.js");
+/* =========================
+   评论
+========================= */
+
+window.openComment = async function (postId) {
+
+  const text = prompt("评论内容");
+  if (!text) return;
+
+  await addDoc(collection(db, "comments"), {
+    postId,
+    uid: currentUser.uid,
+    username: currentUser.displayName,
+    text,
+    time: Date.now()
+  });
+
+  loadComments(postId);
+};
+
+/* =========================
+   加载评论
+========================= */
+
+async function loadComments(postId) {
+
+  const box = document.getElementById(`c-${postId}`);
+  if (!box) return;
+
+  box.innerHTML = "";
+
+  const q = query(collection(db, "comments"), orderBy("time", "asc"));
+  const snap = await getDocs(q);
+
+  snap.forEach((d) => {
+
+    const c = d.data();
+
+    if (c.postId !== postId) return;
+
+    box.innerHTML += `
+      <div style="font-size:12px;margin-left:10px;">
+        <b>${c.username}</b>: ${c.text}
+      </div>
+    `;
+  });
 }
 
-console.log("小方树洞启动成功");
+/* =========================
+   用户主页
+========================= */
+
+window.openProfile = async function (uid) {
+
+  const user = await getDoc(doc(db, "users", uid));
+
+  const u = user.data();
+
+  alert(
+    `用户：${u.username}
+粉丝：${u.followers?.length || 0}
+关注：${u.following?.length || 0}`
+  );
+
+  loadPosts("user");
+};
+
+/* =========================
+   切换信息流
+========================= */
+
+window.feedAll = function () {
+  loadPosts("all");
+};
+
+window.feedFollow = function () {
+  loadPosts("follow");
+};
