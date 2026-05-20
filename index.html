@@ -5,27 +5,32 @@
 
   <meta charset="UTF-8">
 
-  <meta name="viewport"
-        content="width=device-width,
-                 initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1.0"
+  >
 
   <title>小方树洞</title>
 
-  <!-- 样式 -->
+  <!-- CSS -->
 
-  <link rel="stylesheet"
-        href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
-  <!-- App 化 -->
+  <!-- App -->
 
-  <link rel="manifest"
-        href="manifest.json">
+  <link
+    rel="manifest"
+    href="manifest.json"
+  >
 
-  <meta name="theme-color"
-        content="#e9dfd1">
-
-  <link rel="apple-touch-icon"
-        href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
+  <meta
+    name="theme-color"
+    content="#f5efe6"
+  >
 
   <!-- 地图 -->
 
@@ -45,7 +50,10 @@
   <h1>小方树洞</h1>
 
   <p class="login-text">
-    青春会过去，但记忆不会。
+
+    青春会过去，
+    但记忆不会。
+
   </p>
 
   <input
@@ -61,7 +69,9 @@
   >
 
   <button id="passwordBtn">
+
     登录
+
   </button>
 
   <div class="line"></div>
@@ -76,14 +86,11 @@
 
 <!-- 主体 -->
 
-<div id="siteContent"
-     style="display:none;">
-
-  <!-- 胶片颗粒 -->
+<div id="siteContent">
 
   <div class="film-grain"></div>
 
-  <!-- 顶部 -->
+  <!-- Hero -->
 
   <header class="hero">
 
@@ -92,19 +99,23 @@
       <h1>小方树洞</h1>
 
       <p class="subtitle">
+
         把人生藏进时间里。
+
       </p>
 
       <p class="quote">
+
         “总有一些时光，
         值得被偷偷收藏。”
+
       </p>
 
     </div>
 
   </header>
 
-  <!-- 功能区 -->
+  <!-- 功能 -->
 
   <section class="menu-grid">
 
@@ -112,32 +123,44 @@
       class="card"
       onclick="scrollToSection('diary-box')"
     >
-      📝
-      <span>日记</span>
-    </div>
 
-    <div
-      class="card"
-      onclick="scrollToSection('memory-box')"
-    >
-      ✨
-      <span>感想</span>
+      📝
+
+      <span>日记</span>
+
     </div>
 
     <div
       class="card"
       onclick="scrollToSection('photo-wall')"
     >
+
       📷
+
       <span>照片</span>
+
     </div>
 
     <div
       class="card"
       onclick="scrollToSection('map-section')"
     >
+
       🌍
-      <span>旅行</span>
+
+      <span>地图</span>
+
+    </div>
+
+    <div
+      class="card"
+      onclick="scrollToSection('memory-box')"
+    >
+
+      ✨
+
+      <span>回忆</span>
+
     </div>
 
   </section>
@@ -182,7 +205,7 @@
     <input
       type="text"
       id="diaryLocation"
-      placeholder="所在地点"
+      placeholder="地点（例如：吉达）"
     >
 
     <button id="saveDiaryBtn">
@@ -196,19 +219,6 @@
   <!-- 日记列表 -->
 
   <div id="diaryList"></div>
-
-  <!-- 地图 -->
-
-  <section
-    class="map-section"
-    id="map-section"
-  >
-
-    <h2>🗺 人生地图</h2>
-
-    <div id="map"></div>
-
-  </section>
 
   <!-- 上传照片 -->
 
@@ -239,9 +249,22 @@
   <!-- 照片墙 -->
 
   <div
-    id="photoList"
     class="photo-wall"
+    id="photoList"
   ></div>
+
+  <!-- 地图 -->
+
+  <section
+    class="map-section"
+    id="map-section"
+  >
+
+    <h2>🗺 人生地图</h2>
+
+    <div id="map"></div>
+
+  </section>
 
   <!-- 时间轴 -->
 
@@ -293,31 +316,43 @@
   <nav class="bottom-nav">
 
     <button
-      onclick="scrollToSection('memory-box')"
-    >
-      ✨
-      <span>感想</span>
-    </button>
-
-    <button
       onclick="scrollToSection('diary-box')"
     >
+
       📝
+
       <span>日记</span>
+
     </button>
 
     <button
       onclick="scrollToSection('photo-wall')"
     >
+
       📷
+
       <span>照片</span>
+
     </button>
 
     <button
       onclick="scrollToSection('map-section')"
     >
+
       🌍
-      <span>旅行</span>
+
+      <span>地图</span>
+
+    </button>
+
+    <button
+      onclick="scrollToSection('memory-box')"
+    >
+
+      ✨
+
+      <span>回忆</span>
+
     </button>
 
   </nav>
@@ -328,10 +363,12 @@
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- 主系统 -->
+<!-- App -->
 
-<script type="module"
-        src="app.js"></script>
+<script
+  type="module"
+  src="app.js"
+></script>
 
 </body>
 
