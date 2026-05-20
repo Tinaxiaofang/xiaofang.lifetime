@@ -1,5 +1,5 @@
 /* =========================
-   小方树洞 离线缓存系统
+   小方树洞 PWA
 ========================= */
 
 const CACHE_NAME =
@@ -21,15 +21,19 @@ const urlsToCache = [
 
 ];
 
-/* 安装缓存 */
+/* 安装 */
 
 self.addEventListener(
+
   "install",
+
   (event) => {
 
     event.waitUntil(
 
-      caches.open(CACHE_NAME)
+      caches.open(
+        CACHE_NAME
+      )
 
       .then((cache) => {
 
@@ -42,12 +46,15 @@ self.addEventListener(
     );
 
   }
+
 );
 
-/* 读取缓存 */
+/* 缓存读取 */
 
 self.addEventListener(
+
   "fetch",
+
   (event) => {
 
     event.respondWith(
@@ -58,8 +65,14 @@ self.addEventListener(
 
       .then((response) => {
 
-        return response || fetch(
-          event.request
+        return (
+
+          response
+
+          ||
+
+          fetch(event.request)
+
         );
 
       })
@@ -67,4 +80,5 @@ self.addEventListener(
     );
 
   }
+
 );
