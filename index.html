@@ -83,7 +83,10 @@
   <p class="footer-small">青春会过去，但记忆不会。</p>
 </footer>
 
-</body<script type="module">
+</body<script type="module"><div class="login-box">
+  <button id="loginBtn">进入小方树洞</button>
+  <p id="userInfo"></p>
+</div>
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
   const firebaseConfig = {
@@ -96,7 +99,34 @@
   };
 
   const app = initializeApp(firebaseConfig);
+import { 
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+const loginBtn = document.getElementById("loginBtn");
+const userInfo = document.getElementById("userInfo");
+
+loginBtn.addEventListener("click", async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+
+    const user = result.user;
+
+    userInfo.innerHTML =
+      `欢迎回来，${user.displayName}`;
+
+    loginBtn.style.display = "none";
+
+  } catch (error) {
+    console.error(error);
+    alert("登录失败");
+  }
+});
   console.log("小方树洞 Firebase 已连接");
 </script>>
 </html>
