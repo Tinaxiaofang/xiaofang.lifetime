@@ -1,8 +1,6 @@
 /* =========================
-   小方树洞 · 主系统
+   Firebase
 ========================= */
-
-/* Firebase */
 
 import {
 
@@ -55,44 +53,49 @@ document.getElementById("passwordInput");
 const siteContent =
 document.getElementById("siteContent");
 
+/* 默认隐藏 */
+
 siteContent.style.display = "none";
 
-/* 账号密码 */
+/* 密码登录 */
 
-passwordBtn.addEventListener("click", () => {
+passwordBtn.addEventListener(
+  "click",
+  () => {
 
-  const username =
-  usernameInput.value;
+    const username =
+    usernameInput.value;
 
-  const password =
-  passwordInput.value;
+    const password =
+    passwordInput.value;
 
-  if (
+    if (
 
-    username === "xiaofang"
+      username === "xiaofang"
 
-    &&
+      &&
 
-    password === "5201314"
+      password === "5201314"
 
-  ) {
+    ) {
 
-    siteContent.style.display =
-    "block";
+      siteContent.style.display =
+      "block";
 
-    document.querySelector(
-      ".login-box"
-    ).style.display = "none";
+      document.querySelector(
+        ".login-box"
+      ).style.display = "none";
+
+    }
+
+    else {
+
+      alert("账号或密码错误");
+
+    }
 
   }
-
-  else {
-
-    alert("账号或密码错误");
-
-  }
-
-});
+);
 
 /* Google 登录 */
 
@@ -124,13 +127,13 @@ loginBtn.addEventListener(
 );
 
 /* =========================
-   地图系统
+   地图
 ========================= */
 
 const map =
-L.map('map').setView(
+L.map("map").setView(
 
-  [21.4858, 39.1925],
+  [21.4858,39.1925],
 
   3
 
@@ -138,12 +141,12 @@ L.map('map').setView(
 
 L.tileLayer(
 
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 
   {
 
     attribution:
-    '© OpenStreetMap'
+    "© OpenStreetMap"
 
   }
 
@@ -154,28 +157,28 @@ L.tileLayer(
 const cityMap = {
 
   "吉达":
-  [21.4858, 39.1925],
+  [21.4858,39.1925],
 
   "麦地那":
-  [24.5247, 39.5692],
+  [24.5247,39.5692],
 
   "广州":
-  [23.1291, 113.2644],
-
-  "迪拜":
-  [25.2048, 55.2708],
-
-  "拉各斯":
-  [6.5244, 3.3792],
+  [23.1291,113.2644],
 
   "北京":
-  [39.9042, 116.4074],
+  [39.9042,116.4074],
 
   "上海":
-  [31.2304, 121.4737],
+  [31.2304,121.4737],
+
+  "迪拜":
+  [25.2048,55.2708],
+
+  "拉各斯":
+  [6.5244,3.3792],
 
   "麦加":
-  [21.3891, 39.8579]
+  [21.3891,39.8579]
 
 };
 
@@ -258,13 +261,13 @@ saveDiaryBtn.addEventListener(
 
       );
 
+      alert("日记已保存");
+
       diaryTitle.value = "";
 
       diaryContent.value = "";
 
       diaryLocation.value = "";
-
-      alert("日记已保存");
 
       loadDiaries();
 
@@ -330,8 +333,6 @@ async function loadDiaries() {
         ⏰ ${data.time}
       </small>
 
-      <hr>
-
     `;
 
     diaryList.appendChild(div);
@@ -394,12 +395,6 @@ async function loadMemory() {
   const today =
   new Date();
 
-  const todayMonth =
-  today.getMonth();
-
-  const todayDate =
-  today.getDate();
-
   let found = false;
 
   querySnapshot.forEach((doc) => {
@@ -407,18 +402,18 @@ async function loadMemory() {
     const data =
     doc.data();
 
-    const diaryTime =
+    const diaryDate =
     new Date(data.time);
 
     if (
 
-      diaryTime.getMonth()
-      === todayMonth
+      diaryDate.getMonth()
+      === today.getMonth()
 
       &&
 
-      diaryTime.getDate()
-      === todayDate
+      diaryDate.getDate()
+      === today.getDate()
 
     ) {
 
@@ -426,7 +421,7 @@ async function loadMemory() {
 
       memoryContent.innerHTML += `
 
-        <div class="memory-item">
+        <div class="diary-item">
 
           <h3>
             ${data.title}
@@ -435,16 +430,6 @@ async function loadMemory() {
           <p>
             ${data.content}
           </p>
-
-          <small>
-            📍 ${data.location}
-          </small>
-
-          <br>
-
-          <small>
-            ⏰ ${data.time}
-          </small>
 
         </div>
 
@@ -456,13 +441,9 @@ async function loadMemory() {
 
   if (!found) {
 
-    memoryContent.innerHTML = `
+    memoryContent.innerHTML =
 
-      <p>
-        今天还没有过去的回忆。
-      </p>
-
-    `;
+    "今天还没有过去的回忆。";
 
   }
 
@@ -544,8 +525,15 @@ uploadBtn.addEventListener(
       const data =
       await response.json();
 
-      const imageUrl =
-      data.secure_url;
+      if (!data.secure_url) {
+
+        console.error(data);
+
+        alert("上传失败");
+
+        return;
+
+      }
 
       /* 保存数据库 */
 
@@ -559,7 +547,7 @@ uploadBtn.addEventListener(
         {
 
           imageUrl:
-          imageUrl,
+          data.secure_url,
 
           location:
           photoLocation.value,
@@ -655,7 +643,7 @@ async function loadPhotos() {
 
         <img
           src="${data.imageUrl}"
-          width="200"
+          width="180"
           style="
             border-radius:12px;
           "
@@ -676,7 +664,7 @@ async function loadPhotos() {
 loadPhotos();
 
 /* =========================
-   页面跳转
+   页面滚动
 ========================= */
 
 window.scrollToSection =
@@ -699,23 +687,23 @@ function(id) {
 };
 
 /* =========================
-   App 化
+   PWA
 ========================= */
 
 if (
 
-  'serviceWorker'
+  "serviceWorker"
   in navigator
 
 ) {
 
   navigator.serviceWorker
   .register(
-    './service-worker.js'
+    "./service-worker.js"
   );
 
 }
 
 console.log(
-  "小方树洞系统启动成功"
+  "小方树洞启动成功"
 );
