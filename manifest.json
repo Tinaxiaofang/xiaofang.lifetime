@@ -1,0 +1,16 @@
+{
+  "name": "小方树洞",
+  "short_name": "树洞",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f1eb",
+  "theme_color": "#d6c7b0",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/747/747376.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
