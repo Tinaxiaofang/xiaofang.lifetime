@@ -1,17 +1,70 @@
-self.addEventListener('install', e => {
+/* =========================
+   小方树洞 离线缓存系统
+========================= */
 
-  e.waitUntil(
+const CACHE_NAME =
+"xiaofang-cache-v1";
 
-    caches.open('xiaofang-cache').then(cache => {
+const urlsToCache = [
 
-      return cache.addAll([
-        './',
-        './index.html',
-        './style.css'
-      ]);
+  "./",
 
-    })
+  "./index.html",
 
-  );
+  "./style.css",
 
-});
+  "./app.js",
+
+  "./firebase.js",
+
+  "./manifest.json"
+
+];
+
+/* 安装缓存 */
+
+self.addEventListener(
+  "install",
+  (event) => {
+
+    event.waitUntil(
+
+      caches.open(CACHE_NAME)
+
+      .then((cache) => {
+
+        return cache.addAll(
+          urlsToCache
+        );
+
+      })
+
+    );
+
+  }
+);
+
+/* 读取缓存 */
+
+self.addEventListener(
+  "fetch",
+  (event) => {
+
+    event.respondWith(
+
+      caches.match(
+        event.request
+      )
+
+      .then((response) => {
+
+        return response || fetch(
+          event.request
+        );
+
+      })
+
+    );
+
+  }
+);
