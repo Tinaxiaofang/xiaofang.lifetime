@@ -11,10 +11,12 @@
   <title>小方树洞</title>
 
   <link rel="stylesheet" href="style.css">
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet/dist/leaflet.css"
-/>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+
 </head>
 
 <body>
@@ -79,34 +81,40 @@
     </div>
 
   </header>
-<section class="diary-box">
 
-  <h2>📝 今日心情</h2>
+  <!-- 日记系统 -->
 
-  <input
-    type="text"
-    id="diaryTitle"
-    placeholder="标题"
-  >
+  <section class="diary-box">
 
-  <textarea
-    id="diaryContent"
-    placeholder="写下今天的故事..."
-  ></textarea>
+    <h2>📝 今日心情</h2>
 
-  <input
-    type="text"
-    id="diaryLocation"
-    placeholder="所在地点"
-  >
+    <input
+      type="text"
+      id="diaryTitle"
+      placeholder="标题"
+    >
 
-  <button id="saveDiaryBtn">
-    保存日记
-  </button>
+    <textarea
+      id="diaryContent"
+      placeholder="写下今天的故事..."
+    ></textarea>
 
-</section>
+    <input
+      type="text"
+      id="diaryLocation"
+      placeholder="所在地点（例如：吉达）"
+    >
 
-<div id="diaryList"></div>
+    <button id="saveDiaryBtn">
+      保存日记
+    </button>
+
+  </section>
+
+  <div id="diaryList"></div>
+
+  <!-- 今日记录 -->
+
   <section class="today-card">
 
     <h2>📖 今日记录</h2>
@@ -127,6 +135,8 @@
 
   </section>
 
+  <!-- 功能卡片 -->
+
   <section class="menu-grid">
 
     <div class="card">📝 日记</div>
@@ -146,6 +156,8 @@
     <div class="card">🗺 人生地图</div>
 
   </section>
+
+  <!-- 时间轴 -->
 
   <section class="timeline">
 
@@ -182,13 +194,19 @@
     </div>
 
   </section>
-<section class="map-section">
 
-  <h2>🗺 人生地图</h2>
+  <!-- 人生地图 -->
 
-  <div id="map"></div>
+  <section class="map-section">
 
-</section>
+    <h2>🗺 人生地图</h2>
+
+    <div id="map"></div>
+
+  </section>
+
+  <!-- 胶片记忆墙 -->
+
   <section class="gallery">
 
     <h2>📷 胶片记忆墙</h2>
@@ -229,12 +247,17 @@
 
 </div>
 
+<!-- Leaflet 地图 -->
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <!-- Firebase -->
 
 <script type="module">
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
   getFirestore,
   collection,
@@ -242,6 +265,7 @@ import {
   getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 import {
   getAuth,
   signInWithRedirect,
@@ -275,6 +299,7 @@ initializeApp(firebaseConfig);
 
 const db =
 getFirestore(app);
+
 const auth =
 getAuth(app);
 
@@ -301,7 +326,7 @@ document.getElementById("siteContent");
 
 siteContent.style.display = "none";
 
-/* 账号密码登录 */
+/* 登录 */
 
 passwordBtn.addEventListener("click", () => {
 
@@ -354,6 +379,44 @@ loginBtn.addEventListener("click", async () => {
   }
 
 });
+
+/* 地图 */
+
+const map =
+L.map('map').setView(
+  [21.4858, 39.1925],
+  3
+);
+
+L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution: '© OpenStreetMap'
+  }
+).addTo(map);
+
+/* 城市坐标 */
+
+const cityMap = {
+
+  "吉达": [21.4858, 39.1925],
+
+  "麦地那": [24.5247, 39.5692],
+
+  "广州": [23.1291, 113.2644],
+
+  "迪拜": [25.2048, 55.2708],
+
+  "拉各斯": [6.5244, 3.3792],
+
+  "麦加": [21.3891, 39.8579],
+
+  "北京": [39.9042, 116.4074]
+
+};
+
+/* 日记系统 */
+
 const saveDiaryBtn =
 document.getElementById("saveDiaryBtn");
 
@@ -388,6 +451,8 @@ saveDiaryBtn.addEventListener("click", async () => {
   loadDiaries();
 
 });
+
+/* 加载日记 */
 
 async function loadDiaries() {
 
@@ -427,56 +492,44 @@ async function loadDiaries() {
 
     diaryList.appendChild(div);
 
+    /* 自动地图标记 */
+
+    if (
+      cityMap[data.location]
+    ) {
+
+      L.marker(
+        cityMap[data.location]
+      )
+
+      .addTo(map)
+
+      .bindPopup(`
+
+        <h3>${data.title}</h3>
+
+        <p>${data.content}</p>
+
+        <small>
+          📍 ${data.location}
+        </small>
+
+      `);
+
+    }
+
   });
 
 }
 
 loadDiaries();
-const map = L.map('map').setView([21.4858, 39.1925], 3);
 
-L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  {
-    attribution: '© OpenStreetMap'
-  }
-).addTo(map);
-
-/* 默认人生地点 */
-
-const places = [
-
-  {
-    name: "吉达",
-    coords: [21.4858, 39.1925]
-  },
-
-  {
-    name: "麦地那",
-    coords: [24.5247, 39.5692]
-  },
-
-  {
-    name: "广州",
-    coords: [23.1291, 113.2644]
-  }
-
-];
-
-places.forEach(place => {
-
-  L.marker(place.coords)
-   .addTo(map)
-   .bindPopup(
-     `📍 ${place.name}`
-   );
-
-});
 console.log(
   "小方树洞 Firebase 已连接"
 );
 
 </script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 </body>
 
 </html>
