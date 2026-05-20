@@ -24,7 +24,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* =========================
-   登录系统
+   登录
 ========================= */
 
 const loginBtn = document.getElementById("loginBtn");
@@ -35,12 +35,11 @@ const siteContent = document.getElementById("siteContent");
 
 siteContent.style.display = "none";
 
-/* 密码登录 */
 passwordBtn.addEventListener("click", () => {
-  const username = usernameInput.value;
-  const password = passwordInput.value;
-
-  if (username === "xiaofang" && password === "5201314") {
+  if (
+    usernameInput.value === "xiaofang" &&
+    passwordInput.value === "5201314"
+  ) {
     siteContent.style.display = "block";
     document.querySelector(".login-box").style.display = "none";
   } else {
@@ -48,12 +47,11 @@ passwordBtn.addEventListener("click", () => {
   }
 });
 
-/* Google 登录 */
 loginBtn.addEventListener("click", async () => {
   try {
     await signInWithRedirect(auth, provider);
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
     alert("Google 登录失败");
   }
 });
@@ -81,7 +79,7 @@ const cityMap = {
 };
 
 /* =========================
-   日记系统
+   日记
 ========================= */
 
 const saveDiaryBtn = document.getElementById("saveDiaryBtn");
@@ -90,114 +88,110 @@ const diaryContent = document.getElementById("diaryContent");
 const diaryLocation = document.getElementById("diaryLocation");
 const diaryList = document.getElementById("diaryList");
 
-/* 保存日记 */
+/* 保存 */
 saveDiaryBtn.addEventListener("click", async () => {
   if (!diaryTitle.value || !diaryContent.value) {
     alert("请填写完整");
     return;
   }
 
-  try {
-    await addDoc(collection(db, "diaries"), {
-      title: diaryTitle.value,
-      content: diaryContent.value,
-      location: diaryLocation.value,
-      time: Date.now()   // ✅ 关键：时间戳
-    });
+  await addDoc(collection(db, "diaries"), {
+    title: diaryTitle.value,
+    content: diaryContent.value,
+    location: diaryLocation.value,
+    time: Date.now()
+  });
 
-    alert("日记已保存");
+  diaryTitle.value = "";
+  diaryContent.value = "";
+  diaryLocation.value = "";
 
-    diaryTitle.value = "";
-    diaryContent.value = "";
-    diaryLocation.value = "";
-
-    loadDiaries();
-    loadMemory();
-
-  } catch (error) {
-    console.error(error);
-    alert("保存失败");
-  }
+  loadDiaries();
+  loadMemory();
 });
 
-/* 加载日记（排序 + 编辑 + 删除） */
+/* 加载 + 排序 */
 async function loadDiaries() {
   diaryList.innerHTML = "";
 
-  const q = query(
-    collection(db, "diaries"),
-    orderBy("time", "desc")
-  );
-
+  const q = query(collection(db, "diaries"), orderBy("time", "desc"));
   const snapshot = await getDocs(q);
 
   snapshot.forEach((docItem) => {
-    const data = docItem.data();
+    const d = docItem.data();
 
     const div = document.createElement("div");
     div.className = "diary-item";
 
     div.innerHTML = `
-      <h3>${data.title}</h3>
-      <p>${data.content}</p>
-      <small>📍 ${data.location}</small><br>
-      <small>⏰ ${new Date(data.time).toLocaleString()}</small>
+      <h3>${d.title}</h3>
+      <p>${d.content}</p>
 
-      <br><br>
+      <small>📍 ${d.location}</small><br>
+      <small>⏰ ${new Date(d.time).toLocaleString()}</small>
 
-      <button onclick="deleteDiary('${docItem.id}')">删除</button>
-      <button onclick="editDiary('${docItem.id}', \`${data.title}\`, \`${data.content}\`)">编辑</button>
+      <div style="margin-top:10px; display:flex; gap:10px;">
+        <button style="background:#f44336;color:#fff;border:none;padding:5px 10px;border-radius:6px;"
+          onclick="deleteDiary('${docItem.id}')">
+          删除
+        </button>
+
+        <button style="background:#2196f3;color:#fff;border:none;padding:5px 10px;border-radius:6px;"
+          onclick="editDiary('${docItem.id}', \`${d.title}\`, \`${d.content}\`)">
+          编辑
+        </button>
+      </div>
     `;
 
     diaryList.appendChild(div);
 
-    if (cityMap[data.location]) {
-      L.marker(cityMap[data.location])
+    if (cityMap[d.location]) {
+      L.marker(cityMap[d.location])
         .addTo(map)
-        .bindPopup(`<h3>${data.title}</h3><p>${data.content}</p>`);
+        .bindPopup(`<h3>${d.title}</h3><p>${d.content}</p>`);
     }
   });
 }
 
 loadDiaries();
 
-/* 删除日记 */
+/* 删除 */
 window.deleteDiary = async function(id) {
   if (!confirm("确定删除？")) return;
   await deleteDoc(doc(db, "diaries", id));
   loadDiaries();
 };
 
-/* 编辑日记 */
+/* 编辑 */
 window.editDiary = async function(id, title, content) {
-  const newTitle = prompt("修改标题", title);
-  const newContent = prompt("修改内容", content);
+  const t = prompt("修改标题", title);
+  const c = prompt("修改内容", content);
 
-  if (!newTitle || !newContent) return;
+  if (!t || !c) return;
 
   await updateDoc(doc(db, "diaries", id), {
-    title: newTitle,
-    content: newContent
+    title: t,
+    content: c
   });
 
   loadDiaries();
 };
 
 /* =========================
-   那年今天
+   回忆
 ========================= */
 
 async function loadMemory() {
-  const memoryContent = document.getElementById("memoryContent");
-  memoryContent.innerHTML = "";
+  const el = document.getElementById("memoryContent");
+  el.innerHTML = "";
 
   const snapshot = await getDocs(collection(db, "diaries"));
 
   const today = new Date();
   let found = false;
 
-  snapshot.forEach((docItem) => {
-    const data = docItem.data();
+  snapshot.forEach((d) => {
+    const data = d.data();
     const date = new Date(data.time);
 
     if (
@@ -205,8 +199,7 @@ async function loadMemory() {
       date.getDate() === today.getDate()
     ) {
       found = true;
-
-      memoryContent.innerHTML += `
+      el.innerHTML += `
         <div class="diary-item">
           <h3>${data.title}</h3>
           <p>${data.content}</p>
@@ -215,15 +208,13 @@ async function loadMemory() {
     }
   });
 
-  if (!found) {
-    memoryContent.innerHTML = "今天还没有过去的回忆。";
-  }
+  if (!found) el.innerHTML = "今天还没有过去的回忆。";
 }
 
 loadMemory();
 
 /* =========================
-   Cloudinary 照片系统
+   Cloudinary 照片
 ========================= */
 
 const uploadBtn = document.getElementById("uploadBtn");
@@ -231,88 +222,71 @@ const photoInput = document.getElementById("photoInput");
 const photoLocation = document.getElementById("photoLocation");
 const photoList = document.getElementById("photoList");
 
-/* 上传照片 */
+/* 上传 */
 uploadBtn.addEventListener("click", async () => {
   const file = photoInput.files[0];
-
-  if (!file) {
-    alert("请选择照片");
-    return;
-  }
+  if (!file) return alert("请选择照片");
 
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", "xiaofang");
 
-  try {
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/dzlxnbtoo/image/upload",
-      {
-        method: "POST",
-        body: formData
-      }
-    );
+  const res = await fetch(
+    "https://api.cloudinary.com/v1_1/dzlxnbtoo/image/upload",
+    { method: "POST", body: formData }
+  );
 
-    const data = await response.json();
+  const data = await res.json();
 
-    if (!data.secure_url) {
-      console.error(data);
-      alert("上传失败");
-      return;
-    }
-
-    await addDoc(collection(db, "photos"), {
-      imageUrl: data.secure_url,
-      location: photoLocation.value,
-      time: Date.now()   // ✅ 排序关键
-    });
-
-    alert("照片上传成功");
-
-    loadPhotos();
-
-  } catch (error) {
-    console.error(error);
-    alert("上传失败");
+  if (!data.secure_url) {
+    console.error(data);
+    return alert("上传失败");
   }
+
+  await addDoc(collection(db, "photos"), {
+    imageUrl: data.secure_url,
+    location: photoLocation.value,
+    time: Date.now()
+  });
+
+  loadPhotos();
 });
 
-/* 加载照片（排序 + 删除） */
+/* 加载照片 */
 async function loadPhotos() {
   photoList.innerHTML = "";
 
-  const q = query(
-    collection(db, "photos"),
-    orderBy("time", "desc")
-  );
-
+  const q = query(collection(db, "photos"), orderBy("time", "desc"));
   const snapshot = await getDocs(q);
 
   snapshot.forEach((docItem) => {
-    const data = docItem.data();
+    const d = docItem.data();
 
     const div = document.createElement("div");
     div.className = "photo-card";
 
     div.innerHTML = `
-      <img src="${data.imageUrl}" class="memory-photo">
+      <img src="${d.imageUrl}" class="memory-photo">
 
       <div class="photo-info">
-        <p>📍 ${data.location}</p>
-        <small>⏰ ${new Date(data.time).toLocaleString()}</small>
+        <p>📍 ${d.location}</p>
+        <small>⏰ ${new Date(d.time).toLocaleString()}</small>
 
-        <br><br>
-
-        <button onclick="deletePhoto('${docItem.id}')">删除</button>
+        <div style="margin-top:10px;">
+          <button style="background:#f44336;color:#fff;border:none;padding:5px 10px;border-radius:6px;"
+            onclick="deletePhoto('${docItem.id}')">
+            删除
+          </button>
+        </div>
       </div>
     `;
 
     photoList.appendChild(div);
 
-    if (cityMap[data.location]) {
-      L.marker(cityMap[data.location])
+    if (cityMap[d.location]) {
+      L.marker(cityMap[d.location])
         .addTo(map)
-        .bindPopup(`<img src="${data.imageUrl}" width="180"><p>${data.location}</p>`);
+        .bindPopup(`<img src="${d.imageUrl}" width="180"><p>${d.location}</p>`);
     }
   });
 }
@@ -321,25 +295,18 @@ loadPhotos();
 
 /* 删除照片 */
 window.deletePhoto = async function(id) {
-  if (!confirm("确定删除这张照片？")) return;
+  if (!confirm("确定删除？")) return;
   await deleteDoc(doc(db, "photos", id));
   loadPhotos();
 };
 
 /* =========================
-   滚动
+   工具
 ========================= */
 
 window.scrollToSection = function(id) {
-  const section = document.getElementById(id);
-  if (section) {
-    section.scrollIntoView({ behavior: "smooth" });
-  }
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 };
-
-/* =========================
-   PWA
-========================= */
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./service-worker.js");
