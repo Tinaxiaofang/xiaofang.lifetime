@@ -98,7 +98,10 @@
 
   <!-- 那年今天 -->
 
-  <section class="memory-box">
+  <section
+    class="memory-box"
+    id="memory-box"
+  >
 
     <h2>⏳ 那年今天</h2>
 
@@ -112,7 +115,10 @@
 
   <!-- 日记 -->
 
-  <section class="diary-box">
+  <section
+    class="diary-box"
+    id="diary-box"
+  >
 
     <h2>📝 今日心情</h2>
 
@@ -164,25 +170,56 @@
 
   </section>
 
-  <!-- 功能 -->
+  <!-- 功能区 -->
 
   <section class="menu-grid">
 
-    <div class="card">📝 日记</div>
+    <div
+      class="card"
+      onclick="scrollToSection('diary-box')"
+    >
+      📝 日记
+    </div>
 
-    <div class="card">✨ 感想</div>
+    <div
+      class="card"
+      onclick="scrollToSection('memory-box')"
+    >
+      ✨ 感想
+    </div>
 
-    <div class="card">📷 照片</div>
+    <div
+      class="card"
+      onclick="scrollToSection('photo-wall')"
+    >
+      📷 照片
+    </div>
 
-    <div class="card">👥 朋友</div>
+    <div class="card">
+      👥 朋友
+    </div>
 
-    <div class="card">❤️ 恋人</div>
+    <div class="card">
+      ❤️ 恋人
+    </div>
 
-    <div class="card">🌍 旅行</div>
+    <div
+      class="card"
+      onclick="scrollToSection('map-section')"
+    >
+      🌍 旅行
+    </div>
 
-    <div class="card">📌 重要事件</div>
+    <div class="card">
+      📌 重要事件
+    </div>
 
-    <div class="card">🗺 人生地图</div>
+    <div
+      class="card"
+      onclick="scrollToSection('map-section')"
+    >
+      🗺 人生地图
+    </div>
 
   </section>
 
@@ -226,7 +263,10 @@
 
   <!-- 地图 -->
 
-  <section class="map-section">
+  <section
+    class="map-section"
+    id="map-section"
+  >
 
     <h2>🗺 人生地图</h2>
 
@@ -258,7 +298,12 @@
 
   </section>
 
-  <div id="photoList"></div>
+  <!-- 照片墙 -->
+
+  <div
+    id="photoList"
+    class="photo-wall"
+  ></div>
 
   <!-- 胶片墙 -->
 
@@ -304,7 +349,7 @@
 
 </div>
 
-<!-- 地图 JS -->
+<!-- 地图 -->
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -679,7 +724,7 @@ async function loadMemory() {
 
 loadMemory();
 
-/* 上传照片 */
+/* 照片上传系统 */
 
 const uploadBtn =
 document.getElementById("uploadBtn");
@@ -706,10 +751,13 @@ uploadBtn.addEventListener("click", async () => {
 
   }
 
+  const fileName =
+  Date.now() + "_" + file.name;
+
   const storageRef =
   ref(
     storage,
-    "photos/" + file.name
+    "photos/" + fileName
   );
 
   await uploadBytes(
@@ -720,52 +768,115 @@ uploadBtn.addEventListener("click", async () => {
   const url =
   await getDownloadURL(storageRef);
 
-  const img =
-  document.createElement("img");
+  await addDoc(collection(db, "photos"), {
 
-  img.src = url;
+    imageUrl: url,
 
-  img.style.width = "100%";
+    location: photoLocation.value,
 
-  img.style.maxWidth = "500px";
+    time: new Date().toLocaleString()
 
-  img.style.borderRadius = "20px";
-
-  img.style.marginTop = "20px";
-
-  photoList.appendChild(img);
-
-  if (
-    cityMap[photoLocation.value]
-  ) {
-
-    L.marker(
-      cityMap[photoLocation.value]
-    )
-
-    .addTo(map)
-
-    .bindPopup(`
-
-      <h3>📷 人生照片</h3>
-
-      <img
-        src="${url}"
-        width="200"
-        style="border-radius:12px;"
-      >
-
-      <p>
-        📍 ${photoLocation.value}
-      </p>
-
-    `);
-
-  }
+  });
 
   alert("照片上传成功");
 
+  loadPhotos();
+
 });
+
+/* 加载照片 */
+
+async function loadPhotos() {
+
+  photoList.innerHTML = "";
+
+  const querySnapshot =
+  await getDocs(collection(db, "photos"));
+
+  querySnapshot.forEach((doc) => {
+
+    const data = doc.data();
+
+    const div =
+    document.createElement("div");
+
+    div.className = "photo-card";
+
+    div.innerHTML = `
+
+      <img
+        src="${data.imageUrl}"
+        class="memory-photo"
+      >
+
+      <div class="photo-info">
+
+        <p>
+          📍 ${data.location}
+        </p>
+
+        <small>
+          ⏰ ${data.time}
+        </small>
+
+      </div>
+
+    `;
+
+    photoList.appendChild(div);
+
+    if (
+      cityMap[data.location]
+    ) {
+
+      L.marker(
+        cityMap[data.location]
+      )
+
+      .addTo(map)
+
+      .bindPopup(`
+
+        <img
+          src="${data.imageUrl}"
+          width="200"
+          style="
+            border-radius:12px;
+          "
+        >
+
+        <p>
+          📍 ${data.location}
+        </p>
+
+      `);
+
+    }
+
+  });
+
+}
+
+loadPhotos();
+
+/* 卡片跳转 */
+
+window.scrollToSection = function(id) {
+
+  const section =
+  document.getElementById(id);
+
+  if (section) {
+
+    section.scrollIntoView({
+
+      behavior: "smooth"
+
+    });
+
+  }
+
+};
 
 /* App 化 */
 
