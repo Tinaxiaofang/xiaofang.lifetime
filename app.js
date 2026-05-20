@@ -1,23 +1,40 @@
-import {
-
-  db,
-
-  auth,
-
-  provider,
-
-  storage
-
-}
-
-from "./firebase.js";
 /* =========================
    小方树洞 · 主系统
 ========================= */
 
 /* Firebase */
 
+import {
 
+  db,
+
+  auth,
+
+  provider
+
+}
+
+from "./firebase.js";
+
+import {
+
+  collection,
+
+  addDoc,
+
+  getDocs
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+
+  signInWithRedirect
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* =========================
    登录系统
@@ -51,15 +68,21 @@ passwordBtn.addEventListener("click", () => {
   passwordInput.value;
 
   if (
+
     username === "xiaofang"
+
     &&
+
     password === "5201314"
+
   ) {
 
-    siteContent.style.display = "block";
+    siteContent.style.display =
+    "block";
 
-    document.querySelector(".login-box")
-    .style.display = "none";
+    document.querySelector(
+      ".login-box"
+    ).style.display = "none";
 
   }
 
@@ -73,26 +96,32 @@ passwordBtn.addEventListener("click", () => {
 
 /* Google 登录 */
 
-loginBtn.addEventListener("click", async () => {
+loginBtn.addEventListener(
+  "click",
+  async () => {
 
-  try {
+    try {
 
-    await signInWithRedirect(
-      auth,
-      provider
-    );
+      await signInWithRedirect(
+
+        auth,
+
+        provider
+
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      alert("Google 登录失败");
+
+    }
 
   }
-
-  catch (error) {
-
-    console.error(error);
-
-    alert("Google 登录失败");
-
-  }
-
-});
+);
 
 /* =========================
    地图系统
@@ -100,34 +129,53 @@ loginBtn.addEventListener("click", async () => {
 
 const map =
 L.map('map').setView(
+
   [21.4858, 39.1925],
+
   3
+
 );
 
 L.tileLayer(
+
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+
   {
-    attribution: '© OpenStreetMap'
+
+    attribution:
+    '© OpenStreetMap'
+
   }
+
 ).addTo(map);
+
+/* 城市坐标 */
 
 const cityMap = {
 
-  "吉达": [21.4858, 39.1925],
+  "吉达":
+  [21.4858, 39.1925],
 
-  "麦地那": [24.5247, 39.5692],
+  "麦地那":
+  [24.5247, 39.5692],
 
-  "广州": [23.1291, 113.2644],
+  "广州":
+  [23.1291, 113.2644],
 
-  "迪拜": [25.2048, 55.2708],
+  "迪拜":
+  [25.2048, 55.2708],
 
-  "拉各斯": [6.5244, 3.3792],
+  "拉各斯":
+  [6.5244, 3.3792],
 
-  "北京": [39.9042, 116.4074],
+  "北京":
+  [39.9042, 116.4074],
 
-  "上海": [31.2304, 121.4737],
+  "上海":
+  [31.2304, 121.4737],
 
-  "麦加": [21.3891, 39.8579]
+  "麦加":
+  [21.3891, 39.8579]
 
 };
 
@@ -136,59 +184,104 @@ const cityMap = {
 ========================= */
 
 const saveDiaryBtn =
-document.getElementById("saveDiaryBtn");
+document.getElementById(
+  "saveDiaryBtn"
+);
 
 const diaryTitle =
-document.getElementById("diaryTitle");
+document.getElementById(
+  "diaryTitle"
+);
 
 const diaryContent =
-document.getElementById("diaryContent");
+document.getElementById(
+  "diaryContent"
+);
 
 const diaryLocation =
-document.getElementById("diaryLocation");
+document.getElementById(
+  "diaryLocation"
+);
 
 const diaryList =
-document.getElementById("diaryList");
+document.getElementById(
+  "diaryList"
+);
 
-saveDiaryBtn.addEventListener("click", async () => {
+/* 保存日记 */
 
-  if (
-    diaryTitle.value === ""
-    ||
-    diaryContent.value === ""
-  ) {
+saveDiaryBtn.addEventListener(
+  "click",
+  async () => {
 
-    alert("请填写完整");
+    if (
 
-    return;
+      diaryTitle.value === ""
+
+      ||
+
+      diaryContent.value === ""
+
+    ) {
+
+      alert("请填写完整");
+
+      return;
+
+    }
+
+    try {
+
+      await addDoc(
+
+        collection(
+          db,
+          "diaries"
+        ),
+
+        {
+
+          title:
+          diaryTitle.value,
+
+          content:
+          diaryContent.value,
+
+          location:
+          diaryLocation.value,
+
+          time:
+          new Date()
+          .toLocaleString()
+
+        }
+
+      );
+
+      diaryTitle.value = "";
+
+      diaryContent.value = "";
+
+      diaryLocation.value = "";
+
+      alert("日记已保存");
+
+      loadDiaries();
+
+      loadMemory();
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      alert("保存失败");
+
+    }
 
   }
-
-  await addDoc(collection(db, "diaries"), {
-
-    title: diaryTitle.value,
-
-    content: diaryContent.value,
-
-    location: diaryLocation.value,
-
-    time: new Date().toLocaleString()
-
-  });
-
-  diaryTitle.value = "";
-
-  diaryContent.value = "";
-
-  diaryLocation.value = "";
-
-  alert("日记已保存");
-
-  loadDiaries();
-
-  loadMemory();
-
-});
+);
 
 /* 加载日记 */
 
@@ -197,22 +290,35 @@ async function loadDiaries() {
   diaryList.innerHTML = "";
 
   const querySnapshot =
-  await getDocs(collection(db, "diaries"));
+  await getDocs(
+
+    collection(
+      db,
+      "diaries"
+    )
+
+  );
 
   querySnapshot.forEach((doc) => {
 
-    const data = doc.data();
+    const data =
+    doc.data();
 
     const div =
     document.createElement("div");
 
-    div.className = "diary-item";
+    div.className =
+    "diary-item";
 
     div.innerHTML = `
 
-      <h3>${data.title}</h3>
+      <h3>
+        ${data.title}
+      </h3>
 
-      <p>${data.content}</p>
+      <p>
+        ${data.content}
+      </p>
 
       <small>
         📍 ${data.location}
@@ -230,6 +336,8 @@ async function loadDiaries() {
 
     diaryList.appendChild(div);
 
+    /* 地图标记 */
+
     if (
       cityMap[data.location]
     ) {
@@ -242,9 +350,13 @@ async function loadDiaries() {
 
       .bindPopup(`
 
-        <h3>${data.title}</h3>
+        <h3>
+          ${data.title}
+        </h3>
 
-        <p>${data.content}</p>
+        <p>
+          ${data.content}
+        </p>
 
       `);
 
@@ -263,12 +375,21 @@ loadDiaries();
 async function loadMemory() {
 
   const memoryContent =
-  document.getElementById("memoryContent");
+  document.getElementById(
+    "memoryContent"
+  );
 
   memoryContent.innerHTML = "";
 
   const querySnapshot =
-  await getDocs(collection(db, "diaries"));
+  await getDocs(
+
+    collection(
+      db,
+      "diaries"
+    )
+
+  );
 
   const today =
   new Date();
@@ -283,7 +404,8 @@ async function loadMemory() {
 
   querySnapshot.forEach((doc) => {
 
-    const data = doc.data();
+    const data =
+    doc.data();
 
     const diaryTime =
     new Date(data.time);
@@ -306,9 +428,13 @@ async function loadMemory() {
 
         <div class="memory-item">
 
-          <h3>${data.title}</h3>
+          <h3>
+            ${data.title}
+          </h3>
 
-          <p>${data.content}</p>
+          <p>
+            ${data.content}
+          </p>
 
           <small>
             📍 ${data.location}
@@ -345,66 +471,123 @@ async function loadMemory() {
 loadMemory();
 
 /* =========================
-   照片系统
+   Cloudinary 照片系统
 ========================= */
 
 const uploadBtn =
-document.getElementById("uploadBtn");
+document.getElementById(
+  "uploadBtn"
+);
 
 const photoInput =
-document.getElementById("photoInput");
+document.getElementById(
+  "photoInput"
+);
 
 const photoLocation =
-document.getElementById("photoLocation");
+document.getElementById(
+  "photoLocation"
+);
 
 const photoList =
-document.getElementById("photoList");
+document.getElementById(
+  "photoList"
+);
 
-uploadBtn.addEventListener("click", async () => {
+/* 上传照片 */
 
-  const file =
-  photoInput.files[0];
+uploadBtn.addEventListener(
+  "click",
+  async () => {
 
-  if (!file) {
+    const file =
+    photoInput.files[0];
 
-    alert("请选择照片");
+    if (!file) {
 
-    return;
+      alert("请选择照片");
+
+      return;
+
+    }
+
+    const formData =
+    new FormData();
+
+    formData.append(
+      "file",
+      file
+    );
+
+    formData.append(
+      "upload_preset",
+      "xiaofang"
+    );
+
+    try {
+
+      const response =
+      await fetch(
+
+        "https://api.cloudinary.com/v1_1/dzlxnbtoo/image/upload",
+
+        {
+
+          method: "POST",
+
+          body: formData
+
+        }
+
+      );
+
+      const data =
+      await response.json();
+
+      const imageUrl =
+      data.secure_url;
+
+      /* 保存数据库 */
+
+      await addDoc(
+
+        collection(
+          db,
+          "photos"
+        ),
+
+        {
+
+          imageUrl:
+          imageUrl,
+
+          location:
+          photoLocation.value,
+
+          time:
+          new Date()
+          .toLocaleString()
+
+        }
+
+      );
+
+      alert("照片上传成功");
+
+      loadPhotos();
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      alert("上传失败");
+
+    }
 
   }
-
-  const fileName =
-  Date.now() + "_" + file.name;
-
-  const storageRef =
-  ref(
-    storage,
-    "photos/" + fileName
-  );
-
-  await uploadBytes(
-    storageRef,
-    file
-  );
-
-  const url =
-  await getDownloadURL(storageRef);
-
-  await addDoc(collection(db, "photos"), {
-
-    imageUrl: url,
-
-    location: photoLocation.value,
-
-    time: new Date().toLocaleString()
-
-  });
-
-  alert("照片上传成功");
-
-  loadPhotos();
-
-});
+);
 
 /* 加载照片 */
 
@@ -413,16 +596,25 @@ async function loadPhotos() {
   photoList.innerHTML = "";
 
   const querySnapshot =
-  await getDocs(collection(db, "photos"));
+  await getDocs(
+
+    collection(
+      db,
+      "photos"
+    )
+
+  );
 
   querySnapshot.forEach((doc) => {
 
-    const data = doc.data();
+    const data =
+    doc.data();
 
     const div =
     document.createElement("div");
 
-    div.className = "photo-card";
+    div.className =
+    "photo-card";
 
     div.innerHTML = `
 
@@ -446,6 +638,8 @@ async function loadPhotos() {
     `;
 
     photoList.appendChild(div);
+
+    /* 地图照片 */
 
     if (
       cityMap[data.location]
@@ -485,7 +679,8 @@ loadPhotos();
    页面跳转
 ========================= */
 
-window.scrollToSection = function(id) {
+window.scrollToSection =
+function(id) {
 
   const section =
   document.getElementById(id);
@@ -494,7 +689,8 @@ window.scrollToSection = function(id) {
 
     section.scrollIntoView({
 
-      behavior: "smooth"
+      behavior:
+      "smooth"
 
     });
 
@@ -506,9 +702,15 @@ window.scrollToSection = function(id) {
    App 化
 ========================= */
 
-if ('serviceWorker' in navigator) {
+if (
 
-  navigator.serviceWorker.register(
+  'serviceWorker'
+  in navigator
+
+) {
+
+  navigator.serviceWorker
+  .register(
     './service-worker.js'
   );
 
