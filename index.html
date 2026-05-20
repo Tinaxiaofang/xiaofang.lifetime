@@ -9,7 +9,10 @@
         content="width=device-width, initial-scale=1.0">
 
   <title>小方树洞</title>
-
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d6c7b0">
+<link rel="apple-touch-icon"
+href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
   <link rel="stylesheet" href="style.css">
 
   <!-- 地图库 -->
@@ -667,7 +670,17 @@ console.log(
 );
 
 </script>
+<script>
 
+if ('serviceWorker' in navigator) {
+
+  navigator.serviceWorker.register(
+    './service-worker.js'
+  );
+
+}
+
+</script>
 </body>
 
 </html>
