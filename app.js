@@ -522,8 +522,8 @@ uploadBtn.addEventListener(
 
       );
 
-      const data =
-      await response.json();
+      const data = await response.json();
+console.log("Cloudinary返回：", data);
 
       if (!data.secure_url) {
 
