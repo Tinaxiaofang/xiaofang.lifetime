@@ -6,20 +6,23 @@
   <meta charset="UTF-8">
 
   <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+        content="width=device-width,
+                 initial-scale=1.0">
 
   <title>小方树洞</title>
 
-  <!-- 主样式 -->
+  <!-- 样式 -->
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet"
+        href="style.css">
 
   <!-- App 化 -->
 
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest"
+        href="manifest.json">
 
   <meta name="theme-color"
-        content="#d6c7b0">
+        content="#e9dfd1">
 
   <link rel="apple-touch-icon"
         href="https://cdn-icons-png.flaticon.com/512/747/747376.png">
@@ -39,9 +42,9 @@
 
 <div class="login-box">
 
-  <h2>小方树洞</h2>
+  <h1>小方树洞</h1>
 
-  <p class="login-subtitle">
+  <p class="login-text">
     青春会过去，但记忆不会。
   </p>
 
@@ -61,22 +64,26 @@
     登录
   </button>
 
-  <hr>
+  <div class="line"></div>
 
   <button id="loginBtn">
+
     Google 登录
+
   </button>
 
 </div>
 
-<!-- 网站主体 -->
+<!-- 主体 -->
 
 <div id="siteContent"
      style="display:none;">
 
+  <!-- 胶片颗粒 -->
+
   <div class="film-grain"></div>
 
-  <!-- 首页 -->
+  <!-- 顶部 -->
 
   <header class="hero">
 
@@ -89,12 +96,51 @@
       </p>
 
       <p class="quote">
-        “总有一些时光，值得被偷偷收藏。”
+        “总有一些时光，
+        值得被偷偷收藏。”
       </p>
 
     </div>
 
   </header>
+
+  <!-- 功能区 -->
+
+  <section class="menu-grid">
+
+    <div
+      class="card"
+      onclick="scrollToSection('diary-box')"
+    >
+      📝
+      <span>日记</span>
+    </div>
+
+    <div
+      class="card"
+      onclick="scrollToSection('memory-box')"
+    >
+      ✨
+      <span>感想</span>
+    </div>
+
+    <div
+      class="card"
+      onclick="scrollToSection('photo-wall')"
+    >
+      📷
+      <span>照片</span>
+    </div>
+
+    <div
+      class="card"
+      onclick="scrollToSection('map-section')"
+    >
+      🌍
+      <span>旅行</span>
+    </div>
+
+  </section>
 
   <!-- 那年今天 -->
 
@@ -107,7 +153,7 @@
 
     <div id="memoryContent">
 
-      正在寻找过去的你...
+      正在读取记忆...
 
     </div>
 
@@ -136,130 +182,20 @@
     <input
       type="text"
       id="diaryLocation"
-      placeholder="所在地点（例如：吉达）"
+      placeholder="所在地点"
     >
 
     <button id="saveDiaryBtn">
+
       保存日记
+
     </button>
 
   </section>
 
+  <!-- 日记列表 -->
+
   <div id="diaryList"></div>
-
-  <!-- 今日记录 -->
-
-  <section class="today-card">
-
-    <h2>📖 今日记录</h2>
-
-    <div class="entry">
-
-      <p>
-        今天，小方树洞正式诞生了。<br>
-        从这一刻开始，
-        旅行、朋友、爱与成长，
-        都将被认真记录。
-      </p>
-
-      <div class="meta">
-        📍 吉达 · 2026.05.20
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- 功能区 -->
-
-  <section class="menu-grid">
-
-    <div
-      class="card"
-      onclick="scrollToSection('diary-box')"
-    >
-      📝 日记
-    </div>
-
-    <div
-      class="card"
-      onclick="scrollToSection('memory-box')"
-    >
-      ✨ 感想
-    </div>
-
-    <div
-      class="card"
-      onclick="scrollToSection('photo-wall')"
-    >
-      📷 照片
-    </div>
-
-    <div class="card">
-      👥 朋友
-    </div>
-
-    <div class="card">
-      ❤️ 恋人
-    </div>
-
-    <div
-      class="card"
-      onclick="scrollToSection('map-section')"
-    >
-      🌍 旅行
-    </div>
-
-    <div class="card">
-      📌 重要事件
-    </div>
-
-    <div
-      class="card"
-      onclick="scrollToSection('map-section')"
-    >
-      🗺 人生地图
-    </div>
-
-  </section>
-
-  <!-- 时间轴 -->
-
-  <section class="timeline">
-
-    <h2>📅 成长时间轴</h2>
-
-    <div class="timeline-item">
-
-      <span class="year">18岁</span>
-
-      <p>
-        第一次离开熟悉的地方。
-      </p>
-
-    </div>
-
-    <div class="timeline-item">
-
-      <span class="year">19岁</span>
-
-      <p>
-        来到沙特，开始新的生活。
-      </p>
-
-    </div>
-
-    <div class="timeline-item">
-
-      <span class="year">20岁</span>
-
-      <p>
-        小方树洞诞生。
-      </p>
-
-    </div>
-
-  </section>
 
   <!-- 地图 -->
 
@@ -278,7 +214,7 @@
 
   <section class="upload-box">
 
-    <h2>📷 上传人生照片</h2>
+    <h2>📷 上传照片</h2>
 
     <input
       type="file"
@@ -289,11 +225,13 @@
     <input
       type="text"
       id="photoLocation"
-      placeholder="照片地点（例如：吉达）"
+      placeholder="照片地点"
     >
 
     <button id="uploadBtn">
+
       上传照片
+
     </button>
 
   </section>
@@ -305,47 +243,84 @@
     class="photo-wall"
   ></div>
 
-  <!-- 胶片墙 -->
+  <!-- 时间轴 -->
 
-  <section class="gallery">
+  <section class="timeline">
 
-    <h2>📷 胶片记忆墙</h2>
+    <h2>📅 成长时间轴</h2>
 
-    <div class="photo-grid">
+    <div class="timeline-item">
 
-      <div class="photo">
-        旅行照片
-      </div>
+      <span class="year">
+        18岁
+      </span>
 
-      <div class="photo">
-        朋友瞬间
-      </div>
+      <p>
+        第一次离开熟悉的地方。
+      </p>
 
-      <div class="photo">
-        城市夜晚
-      </div>
+    </div>
 
-      <div class="photo">
-        青春记忆
-      </div>
+    <div class="timeline-item">
+
+      <span class="year">
+        19岁
+      </span>
+
+      <p>
+        来到沙特，
+        开始新的生活。
+      </p>
+
+    </div>
+
+    <div class="timeline-item">
+
+      <span class="year">
+        20岁
+      </span>
+
+      <p>
+        小方树洞诞生。
+      </p>
 
     </div>
 
   </section>
 
-  <!-- 页脚 -->
+  <!-- 底部导航 -->
 
-  <footer>
+  <nav class="bottom-nav">
 
-    <p>
-      © 小方树洞 · Xiaofang Memory Archive
-    </p>
+    <button
+      onclick="scrollToSection('memory-box')"
+    >
+      ✨
+      <span>感想</span>
+    </button>
 
-    <p class="footer-small">
-      青春会过去，但记忆不会。
-    </p>
+    <button
+      onclick="scrollToSection('diary-box')"
+    >
+      📝
+      <span>日记</span>
+    </button>
 
-  </footer>
+    <button
+      onclick="scrollToSection('photo-wall')"
+    >
+      📷
+      <span>照片</span>
+    </button>
+
+    <button
+      onclick="scrollToSection('map-section')"
+    >
+      🌍
+      <span>旅行</span>
+    </button>
+
+  </nav>
 
 </div>
 
@@ -353,546 +328,10 @@
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- Firebase -->
+<!-- 主系统 -->
 
-<script type="module">
-
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  getAuth,
-  signInWithRedirect,
-  GoogleAuthProvider
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-/* Firebase */
-
-const firebaseConfig = {
-
-  apiKey:
-  "AIzaSyBp3yXkRP1BaAxXqscVb7NuFWmUtMn4xPI",
-
-  authDomain:
-  "xiaofanglife.firebaseapp.com",
-
-  projectId:
-  "xiaofanglife",
-
-  storageBucket:
-  "xiaofanglife.appspot.com",
-
-  messagingSenderId:
-  "34189068819",
-
-  appId:
-  "1:34189068819:web:2f17d673b2fdd750200de6"
-};
-
-const app =
-initializeApp(firebaseConfig);
-
-const db =
-getFirestore(app);
-
-const auth =
-getAuth(app);
-
-const storage =
-getStorage(app);
-
-const provider =
-new GoogleAuthProvider();
-
-/* 登录 */
-
-const loginBtn =
-document.getElementById("loginBtn");
-
-const passwordBtn =
-document.getElementById("passwordBtn");
-
-const usernameInput =
-document.getElementById("usernameInput");
-
-const passwordInput =
-document.getElementById("passwordInput");
-
-const siteContent =
-document.getElementById("siteContent");
-
-siteContent.style.display = "none";
-
-passwordBtn.addEventListener("click", () => {
-
-  const username =
-  usernameInput.value;
-
-  const password =
-  passwordInput.value;
-
-  if (
-    username === "xiaofang"
-    &&
-    password === "5201314"
-  ) {
-
-    siteContent.style.display = "block";
-
-    document.querySelector(".login-box")
-    .style.display = "none";
-
-  }
-
-  else {
-
-    alert("账号或密码错误");
-
-  }
-
-});
-
-/* Google 登录 */
-
-loginBtn.addEventListener("click", async () => {
-
-  try {
-
-    await signInWithRedirect(
-      auth,
-      provider
-    );
-
-  }
-
-  catch (error) {
-
-    console.error(error);
-
-    alert("Google 登录失败");
-
-  }
-
-});
-
-/* 地图 */
-
-const map =
-L.map('map').setView(
-  [21.4858, 39.1925],
-  3
-);
-
-L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  {
-    attribution: '© OpenStreetMap'
-  }
-).addTo(map);
-
-/* 城市坐标 */
-
-const cityMap = {
-
-  "吉达": [21.4858, 39.1925],
-
-  "麦地那": [24.5247, 39.5692],
-
-  "广州": [23.1291, 113.2644],
-
-  "迪拜": [25.2048, 55.2708],
-
-  "拉各斯": [6.5244, 3.3792],
-
-  "北京": [39.9042, 116.4074],
-
-  "上海": [31.2304, 121.4737],
-
-  "麦加": [21.3891, 39.8579]
-
-};
-
-/* 日记系统 */
-
-const saveDiaryBtn =
-document.getElementById("saveDiaryBtn");
-
-const diaryTitle =
-document.getElementById("diaryTitle");
-
-const diaryContent =
-document.getElementById("diaryContent");
-
-const diaryLocation =
-document.getElementById("diaryLocation");
-
-const diaryList =
-document.getElementById("diaryList");
-
-saveDiaryBtn.addEventListener("click", async () => {
-
-  await addDoc(collection(db, "diaries"), {
-
-    title: diaryTitle.value,
-
-    content: diaryContent.value,
-
-    location: diaryLocation.value,
-
-    time: new Date().toLocaleString()
-
-  });
-
-  alert("日记已保存");
-
-  loadDiaries();
-
-  loadMemory();
-
-});
-
-/* 加载日记 */
-
-async function loadDiaries() {
-
-  diaryList.innerHTML = "";
-
-  const querySnapshot =
-  await getDocs(collection(db, "diaries"));
-
-  querySnapshot.forEach((doc) => {
-
-    const data = doc.data();
-
-    const div =
-    document.createElement("div");
-
-    div.className = "diary-item";
-
-    div.innerHTML = `
-
-      <h3>${data.title}</h3>
-
-      <p>${data.content}</p>
-
-      <small>
-        📍 ${data.location}
-      </small>
-
-      <br>
-
-      <small>
-        ⏰ ${data.time}
-      </small>
-
-      <hr>
-
-    `;
-
-    diaryList.appendChild(div);
-
-    if (
-      cityMap[data.location]
-    ) {
-
-      L.marker(
-        cityMap[data.location]
-      )
-
-      .addTo(map)
-
-      .bindPopup(`
-
-        <h3>${data.title}</h3>
-
-        <p>${data.content}</p>
-
-        <small>
-          📍 ${data.location}
-        </small>
-
-      `);
-
-    }
-
-  });
-
-}
-
-loadDiaries();
-
-/* 那年今天 */
-
-async function loadMemory() {
-
-  const memoryContent =
-  document.getElementById("memoryContent");
-
-  memoryContent.innerHTML = "";
-
-  const querySnapshot =
-  await getDocs(collection(db, "diaries"));
-
-  const today =
-  new Date();
-
-  const todayMonth =
-  today.getMonth();
-
-  const todayDate =
-  today.getDate();
-
-  let found = false;
-
-  querySnapshot.forEach((doc) => {
-
-    const data = doc.data();
-
-    const diaryTime =
-    new Date(data.time);
-
-    if (
-
-      diaryTime.getMonth()
-      === todayMonth
-
-      &&
-
-      diaryTime.getDate()
-      === todayDate
-
-    ) {
-
-      found = true;
-
-      memoryContent.innerHTML += `
-
-        <div class="memory-item">
-
-          <h3>${data.title}</h3>
-
-          <p>${data.content}</p>
-
-          <small>
-            📍 ${data.location}
-          </small>
-
-          <br>
-
-          <small>
-            ⏰ ${data.time}
-          </small>
-
-        </div>
-
-      `;
-
-    }
-
-  });
-
-  if (!found) {
-
-    memoryContent.innerHTML = `
-
-      <p>
-        今天还没有过去的回忆。
-      </p>
-
-    `;
-
-  }
-
-}
-
-loadMemory();
-
-/* 照片上传系统 */
-
-const uploadBtn =
-document.getElementById("uploadBtn");
-
-const photoInput =
-document.getElementById("photoInput");
-
-const photoLocation =
-document.getElementById("photoLocation");
-
-const photoList =
-document.getElementById("photoList");
-
-uploadBtn.addEventListener("click", async () => {
-
-  const file =
-  photoInput.files[0];
-
-  if (!file) {
-
-    alert("请选择照片");
-
-    return;
-
-  }
-
-  const fileName =
-  Date.now() + "_" + file.name;
-
-  const storageRef =
-  ref(
-    storage,
-    "photos/" + fileName
-  );
-
-  await uploadBytes(
-    storageRef,
-    file
-  );
-
-  const url =
-  await getDownloadURL(storageRef);
-
-  await addDoc(collection(db, "photos"), {
-
-    imageUrl: url,
-
-    location: photoLocation.value,
-
-    time: new Date().toLocaleString()
-
-  });
-
-  alert("照片上传成功");
-
-  loadPhotos();
-
-});
-
-/* 加载照片 */
-
-async function loadPhotos() {
-
-  photoList.innerHTML = "";
-
-  const querySnapshot =
-  await getDocs(collection(db, "photos"));
-
-  querySnapshot.forEach((doc) => {
-
-    const data = doc.data();
-
-    const div =
-    document.createElement("div");
-
-    div.className = "photo-card";
-
-    div.innerHTML = `
-
-      <img
-        src="${data.imageUrl}"
-        class="memory-photo"
-      >
-
-      <div class="photo-info">
-
-        <p>
-          📍 ${data.location}
-        </p>
-
-        <small>
-          ⏰ ${data.time}
-        </small>
-
-      </div>
-
-    `;
-
-    photoList.appendChild(div);
-
-    if (
-      cityMap[data.location]
-    ) {
-
-      L.marker(
-        cityMap[data.location]
-      )
-
-      .addTo(map)
-
-      .bindPopup(`
-
-        <img
-          src="${data.imageUrl}"
-          width="200"
-          style="
-            border-radius:12px;
-          "
-        >
-
-        <p>
-          📍 ${data.location}
-        </p>
-
-      `);
-
-    }
-
-  });
-
-}
-
-loadPhotos();
-
-/* 卡片跳转 */
-
-window.scrollToSection = function(id) {
-
-  const section =
-  document.getElementById(id);
-
-  if (section) {
-
-    section.scrollIntoView({
-
-      behavior: "smooth"
-
-    });
-
-  }
-
-};
-
-/* App 化 */
-
-if ('serviceWorker' in navigator) {
-
-  navigator.serviceWorker.register(
-    './service-worker.js'
-  );
-
-}
-
-console.log(
-  "小方树洞 Firebase 已连接"
-);
-
-</script>
+<script type="module"
+        src="app.js"></script>
 
 </body>
 
